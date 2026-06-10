@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Activation Order | Input Your Details</title>
+    <meta name="description" content="Checkout-style order page for AI activation packages." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <nav class="nav container">
+        <a class="brand" href="index.html">AI Activation Settings</a>
+        <a class="pill-button" href="index.html#packages">Back to Packages</a>
+      </nav>
+    </header>
+
+    <main class="container section-block">
+      <section class="hero order-layout">
+        <div class="hero-copy">
+          <p class="eyebrow">Activation checkout</p>
+          <h1>Complete your package order.</h1>
+          <p class="lede">
+            Enter your contact details below, copy the payment number, and make the transfer. After you submit,
+            you will be taken to our WhatsApp DM so you can send your receipt and payment proof.
+          </p>
+          <div class="payment-box">
+            <label for="paymentNumber">Payment number</label>
+            <div class="copy-row">
+              <input id="paymentNumber" type="text" value="0509541835" readonly />
+              <button class="secondary-button" type="button" id="copyBtn">Copy</button>
+            </div>
+            <p class="tiny-note">Send your payment proof to 0509541835 after paying.</p>
+          </div>
+
+          <form class="order-form" id="orderForm">
+            <input type="hidden" name="package" id="packageField" />
+            <input type="hidden" name="amount" id="amountField" />
+            <input type="hidden" name="payment_number" value="0509541835" />
+            <label>
+              Full name
+              <input type="text" name="name" placeholder="Enter your full name" required />
+            </label>
+            <label>
+              Phone number
+              <input type="tel" name="phone" placeholder="Enter your phone number" required />
+            </label>
+            <label>
+              Email address
+              <input type="email" name="email" placeholder="Enter your email address" required />
+            </label>
+            <button class="primary-button" type="submit">Continue to WhatsApp — <span id="priceLabel">0</span> Cedis</button>
+          </form>
+        </div>
+
+        <aside class="hero-card order-summary" aria-label="Selected package summary">
+          <p class="mini-label">Selected package</p>
+          <h2 id="packageTitle">AI Activation</h2>
+          <p id="packageMessage">Choose a package on the homepage to begin your order.</p>
+          <ul>
+            <li>Secure activation setup</li>
+            <li>24/7 trading support</li>
+            <li>Fast access for your account</li>
+          </ul>
+          <div class="summary-box">
+            <span>Total to pay</span>
+            <strong id="priceBox">0 Cedis</strong>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <footer class="footer container">
+      <p>AI Activation Settings © 2014. Checkout-ready order page.</p>
+    </footer>
+
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const selectedPackage = params.get('package') || 'AI Activation';
+      const selectedPrice = parseInt(params.get('price') || '0', 10);
+
+      document.getElementById('packageTitle').textContent = selectedPackage;
+      document.getElementById('priceLabel').textContent = selectedPrice;
+      document.getElementById('priceBox').textContent = selectedPrice + ' Cedis';
+      document.getElementById('packageMessage').textContent = 'You selected ' + selectedPackage + ' at ' + selectedPrice + ' Cedis.';
+      document.getElementById('packageField').value = selectedPackage;
+      document.getElementById('amountField').value = selectedPrice + ' Cedis';
+
+      const copyBtn = document.getElementById('copyBtn');
+      copyBtn?.addEventListener('click', async function () {
+        const number = document.getElementById('paymentNumber');
+        try {
+          await navigator.clipboard.writeText(number.value);
+          this.textContent = 'Copied';
+          setTimeout(() => { this.textContent = 'Copy'; }, 1200);
+        } catch (error) {
+          number.select();
+          document.execCommand('copy');
+          this.textContent = 'Copied';
+          setTimeout(() => { this.textContent = 'Copy'; }, 1200);
+        }
+      });
+
+      document.getElementById('orderForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const name = this.name.value.trim();
+        const phone = this.phone.value.trim();
+        const email = this.email.value.trim();
+        const paymentNumber = document.getElementById('paymentNumber').value;
+        const whatsappNumber = '17792300414';
+
+        if (!name || !phone || !email) return;
+
+        const message = encodeURIComponent(
+          'Hello AI Activation, I would like to confirm my manual payment order.\n' +
+          'Package: ' + selectedPackage + '\n' +
+          'Amount: ' + selectedPrice + ' Cedis\n' +
+          'Payment number to use: ' + paymentNumber + '\n' +
+          'Full name: ' + name + '\n' +
+          'Phone number: ' + phone + '\n' +
+          'Email: ' + email + '\n\n' +
+          'Please guide me on the next step and I will send my receipt here.'
+        );
+
+        window.location.href = 'https://wa.me/' + whatsappNumber + '?text=' + message;
+      });
+
+    </script>
+  </body>
+</html>
